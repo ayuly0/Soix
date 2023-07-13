@@ -192,5 +192,3 @@ async def on_ready():
 	await client.add_cog(Destroy())
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
-
-client.run("MTEyODYxNzQxNTE4MjM4OTM1OA.GHVBuj.fwYyxR3dt2SdgAfW1lMraeDLs3Lja29sbiega4")
