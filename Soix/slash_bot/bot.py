@@ -20,4 +20,4 @@ class Soix(commands.Bot):
 		print(f'--- {self.user} conntected to Discord!')
 
 bot = Soix()
-bot.run('MTEyODYxNzQxNTE4MjM4OTM1OA.Gc7kL1.wHDOBwz_Q4DJpKgtNwpZHal3yKiP2KpKno_k5g')
+bot.run('')

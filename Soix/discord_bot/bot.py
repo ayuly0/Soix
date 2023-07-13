@@ -249,4 +249,4 @@ async def on_ready():
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.GSKCE6.qHV7rXUtb6PZ0ko4ODONoBLgX6DSoBDXRy1w7E')
+client.run('')
