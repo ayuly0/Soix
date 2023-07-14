@@ -79,7 +79,7 @@ def LogSend():
 			time_count = time_delay
 
 def BotControl():
-	bot.client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GHNYYA.2BmFRDOd6kC3vAkHIYMcEpLRoJLk7PViJezd-s')
+	bot.client.run('')
 
 log_send = threading.Thread(target = LogSend, daemon=True)
 bot_th = threading.Thread(target = BotControl)
