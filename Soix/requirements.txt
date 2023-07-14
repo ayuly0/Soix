@@ -8,3 +8,4 @@ discord-pretty-help
 sounddevice
 scipy
 pyinstaller
+pygame

