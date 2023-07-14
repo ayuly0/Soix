@@ -1,5 +1,4 @@
 __import__('sys').path.append('../')
-import subprcess
 from winpwnage.functions.uac.uacMethod1 import uacMethod1
 from winpwnage.functions.elevate.elevateMethod1 import elevateMethod1
 

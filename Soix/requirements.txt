@@ -1,11 +1,10 @@
 pynput
-pywin32
 discord
 psutil
 requests
 pillow
 discord-pretty-help
 sounddevice
-scipy
+wavio
 pyinstaller
 pygame

