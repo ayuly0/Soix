@@ -7,3 +7,4 @@ pillow
 discord-pretty-help
 sounddevice
 scipy
+pyinstaller

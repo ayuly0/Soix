@@ -1,8 +1,8 @@
 __import__('sys').path.append('../')
 import subprcess
-from winpwnage.function.uac.uacMethod2 import uacMethod2
-from winpwnage.function.persist.persistMethod4 import persistMethod4
-from winpwnage.function.elevate.elevateMethod1 import elevateMethod1
+from winpwnage.functions.uac.uacMethod2 import uacMethod2
+from winpwnage.functions.persist.persistMethod4 import persistMethod4
+from winpwnage.functions.elevate.elevateMethod1 import elevateMethod1
 
 
 class TurnOffSecurity(object):
