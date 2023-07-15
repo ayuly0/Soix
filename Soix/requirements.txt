@@ -8,3 +8,4 @@ sounddevice
 wavio
 pyinstaller
 pygame
+configparser
