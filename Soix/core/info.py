@@ -10,8 +10,9 @@ def get_size(bytes_, suffix="B"):
 class Info:
 	### IP INFOMATION ###
 	def IP(self):
-		ip = requests.get('https://api.ipify.org').content.decode('utf8')
+		ip = requests.get('https://api.ipify.org').content.decode('utf-8')
 		return ip
+		
 	def IPData(self):
 		r = requests.get('http://ipinfo.io/json')
 		data = json.loads(r.text)

