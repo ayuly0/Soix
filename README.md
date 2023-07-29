@@ -1,5 +1,5 @@
 # Soix
-A Discord C2
+A Discord Rat
 
 ## Feautures
 ### Destroy Computer
